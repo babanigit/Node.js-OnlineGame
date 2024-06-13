@@ -1,18 +1,36 @@
-import express,{Express} from "express"
-import path from "path"
+import express, { Express } from "express";
+const app: Express = express();
 
-const  app:Express =express();
-const port = 3000;
+import dotenv from "dotenv";
+dotenv.config();
+
+const port = process.env.PORT || 5000;
+
+import path from "path";
 const dirname = path.resolve();
 
-app.use(express.static("public"))
+//socket.io setup
+import http from "http";
+const server = http.createServer(app);
+import { Server, Socket } from "socket.io";
+const io = new Server(server);
 
-console.log(dirname)
+app.use(express.static("public"));
 
-app.get("/",(req,res)=>{
-  res.sendFile(dirname + "/public/index.html")
-})
+console.log(dirname);
 
-app.listen(port,()=>{
-  console.log(`express serve is live on http://localhost:${port}`)
-})
+app.get("/", (req, res) => {
+  res.sendFile(dirname + "/public/index.html");
+});
+
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
+server.listen(port, () => {
+  console.log(`express serve is live on http://localhost:${port}`);
+});
+
