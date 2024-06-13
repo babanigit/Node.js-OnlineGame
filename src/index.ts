@@ -14,7 +14,6 @@ function fetchData(callback: (value: string) => void) {
 function handleData(data: string) {
   console.log("Data received:", data);
 }
-
 // Call the fetchData function and pass the handleData function as a callback
 fetchData(handleData);
 
