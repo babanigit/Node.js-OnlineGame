@@ -1,22 +1,18 @@
-import loadPoke from "./fetchData/fetchPoke";
+import express,{Express} from "express"
+import path from "path"
 
-console.log("hello world");
+const  app:Express =express();
+const port = 3000;
+const dirname = path.resolve();
 
-function fetchData(callback: (value: string) => void) {
-  // Simulate fetching data asynchronously
-  setTimeout(() => {
-    const data = "Some fetched data";
-    // Call the callback function and pass the fetched data to it
-    callback(data);
-  }, 1000); // Simulating a 1-second delay
-}
+app.use(express.static("public"))
 
-function handleData(data: string) {
-  console.log("Data received:", data);
-}
-// Call the fetchData function and pass the handleData function as a callback
-fetchData(handleData);
+console.log(dirname)
 
-loadPoke(56,(poke=>{
-  console.log(poke)
-}))
+app.get("/",(req,res)=>{
+  res.sendFile(dirname + "/public/index.html")
+})
+
+app.listen(port,()=>{
+  console.log(`express serve is live on http://localhost:${port}`)
+})

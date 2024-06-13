@@ -8,10 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const loadPoke = (id, cb) => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     const data = yield res.json();
     cb(data);
 });
-exports.default = loadPoke;
+console.log("hello world");
+function fetchData(callback) {
+    // Simulate fetching data asynchronously
+    setTimeout(() => {
+        const data = "Some fetched data";
+        // Call the callback function and pass the fetched data to it
+        callback(data);
+    }, 1000); // Simulating a 1-second delay
+}
+function handleData(data) {
+    console.log("Data received:", data);
+}
+// Call the fetchData function and pass the handleData function as a callback
+fetchData(handleData);
+loadPoke(56, (poke) => {
+    console.log(poke);
+});
