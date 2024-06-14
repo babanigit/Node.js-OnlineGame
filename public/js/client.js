@@ -5,9 +5,9 @@ const socket = io();
 
 const scoreEl = document.querySelector("#scoreEl");
 
-const devicePixelRatio= window.devicePixelRatio || 1
-canvas.width = innerWidth * devicePixelRatio
-canvas.height = innerHeight * devicePixelRatio
+const devicePixelRatio = window.devicePixelRatio || 1;
+canvas.width = innerWidth * devicePixelRatio;
+canvas.height = innerHeight * devicePixelRatio;
 
 const x = canvas.width / 2;
 const y = canvas.height / 2;
@@ -55,3 +55,20 @@ function animate() {
 }
 
 animate();
+
+window.addEventListener("keydown", (event) => {
+  switch (event.code) {
+    case "KeyW":
+      frontEndPlayers[socket.id].y -= 5
+      break;
+    case "KeyA":
+      frontEndPlayers[socket.id].x -= 5
+      break;
+    case "KeyS":
+      frontEndPlayers[socket.id].y += 5
+      break;
+    case "KeyD":
+      frontEndPlayers[socket.id].x += 5
+      break;
+  }
+});
