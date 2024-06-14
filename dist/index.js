@@ -20,17 +20,18 @@ console.log(dirname);
 app.get("/", (req, res) => {
     res.sendFile(dirname + "/public/index.html");
 });
-const players = {};
-io.on("connection", (socket) => {
+const players = {}; //backend players object
+io.on('connection', (socket) => {
     console.log("a user connected");
-    socket.on("disconnect", () => {
-        console.log("user disconnected");
-        players[socket.id] = {
-            x: 100,
-            y: 100
-        };
-        io.emit("updatePlayers", players);
-        console.log(players);
+    players[socket.id] = {
+        x: 100,
+        y: 100
+    };
+    // sending to frontend
+    io.emit("updatePlayers", players);
+    console.log("sending this objects to the frontend ", players);
+    socket.on("disconnect", (dis) => {
+        console.log("user disconnected ", dis);
     });
 });
 server.listen(port, () => {

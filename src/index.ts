@@ -26,26 +26,22 @@ app.get("/", (req, res) => {
   res.sendFile(dirname + "/public/index.html");
 });
 
+const players: Record<string, IPlayer> = {} //backend players object
 
-const players: Record<string, IPlayer> ={
-
-}
-
-io.on("connection", (socket) => {
+io.on('connection', (socket) => {
   console.log("a user connected");
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
+  players[socket.id] = {
+    x: 100,
+    y: 100
+  }
+  // sending to frontend
+  io.emit("updatePlayers", players)
+  console.log("sending this objects to the frontend ", players)
 
-    players[socket.id]={
-      x:100,
-      y:100
-    }
-
-    io.emit("updatePlayers",players)
-
-    console.log(players)
-
+  socket.on("disconnect", (dis) => {
+    console.log("user disconnected ",dis);
   });
+
 });
 
 server.listen(port, () => {
