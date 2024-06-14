@@ -14,7 +14,7 @@ const dirname = path_1.default.resolve();
 const http_1 = __importDefault(require("http"));
 const server = http_1.default.createServer(app);
 const socket_io_1 = require("socket.io");
-const io = new socket_io_1.Server(server);
+const io = new socket_io_1.Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 app.use(express_1.default.static("public"));
 console.log(dirname);
 app.get("/", (req, res) => {
@@ -24,14 +24,16 @@ const players = {}; //backend players object
 io.on('connection', (socket) => {
     console.log("a user connected");
     players[socket.id] = {
-        x: 100,
-        y: 100
+        x: 500 * Math.random(),
+        y: 500 * Math.random()
     };
     // sending to frontend
-    io.emit("updatePlayers", players);
+    io.emit('updatePlayers', players);
     console.log("sending this objects to the frontend ", players);
-    socket.on("disconnect", (dis) => {
-        console.log("user disconnected ", dis);
+    socket.on("disconnect", (reason) => {
+        console.log("user disconnected ", reason);
+        delete players[socket.id];
+        io.emit('updatePlayers', players);
     });
 });
 server.listen(port, () => {

@@ -12,11 +12,12 @@ const port = process.env.PORT || 3000;
 import path from "path";
 const dirname = path.resolve();
 
+
 //socket.io setup
 import http from "http";
 const server = http.createServer(app);
 import { Server, Socket } from "socket.io";
-const io = new Server(server);
+const io = new Server(server,{ pingInterval: 2000, pingTimeout: 5000});
 
 app.use(express.static("public"));
 
@@ -31,15 +32,20 @@ const players: Record<string, IPlayer> = {} //backend players object
 io.on('connection', (socket) => {
   console.log("a user connected");
   players[socket.id] = {
-    x: 100,
-    y: 100
+    x: 500 * Math.random(),
+    y: 500 * Math.random()
+    
   }
   // sending to frontend
-  io.emit("updatePlayers", players)
+  io.emit('updatePlayers', players)
   console.log("sending this objects to the frontend ", players)
 
-  socket.on("disconnect", (dis) => {
-    console.log("user disconnected ",dis);
+  socket.on("disconnect", (reason) => {
+    console.log("user disconnected ",reason);
+
+    delete players[socket.id]
+    io.emit('updatePlayers', players)
+
   });
 
 });
