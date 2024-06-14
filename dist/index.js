@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 const path_1 = __importDefault(require("path"));
 const dirname = path_1.default.resolve();
 //socket.io setup
@@ -20,10 +20,17 @@ console.log(dirname);
 app.get("/", (req, res) => {
     res.sendFile(dirname + "/public/index.html");
 });
+const players = {};
 io.on("connection", (socket) => {
     console.log("a user connected");
     socket.on("disconnect", () => {
         console.log("user disconnected");
+        players[socket.id] = {
+            x: 100,
+            y: 100
+        };
+        io.emit("updatePlayers", players);
+        console.log(players);
     });
 });
 server.listen(port, () => {
