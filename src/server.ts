@@ -17,7 +17,7 @@ const dirname = path.resolve();
 import http from "http";
 const server = http.createServer(app);
 import { Server, Socket } from "socket.io";
-const io = new Server(server,{ pingInterval: 2000, pingTimeout: 5000});
+const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 
 app.use(express.static("public"));
 
@@ -35,21 +35,42 @@ io.on('connection', (socket) => {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
     color: `hsl(${360 * Math.random()},100%,50%)`
-    
+
   }
   // sending to frontend
   io.emit('updatePlayers', players)
   console.log("sending this objects to the frontend ", players)
 
   socket.on("disconnect", (reason) => {
-    console.log("user disconnected ",reason);
+    console.log("user disconnected ", reason);
 
     delete players[socket.id]
     io.emit('updatePlayers', players)
 
   });
 
+  socket.on("keydown", (keycode) => {
+    switch (keycode) {
+      case "KeyW":
+        players[socket.id].y -= 10
+        break;
+      case "KeyA":
+        players[socket.id].x -= 10
+        break;
+      case "KeyS":
+        players[socket.id].y += 10
+        break;
+      case "KeyD":
+        players[socket.id].x += 10
+        break;
+    }
+  })
+
 });
+
+setInterval(() => {
+  io.emit("updatePlayers", players)
+}, 15)
 
 server.listen(port, () => {
   console.log(`express serve is live on http://localhost:${port}`);

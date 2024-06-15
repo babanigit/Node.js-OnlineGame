@@ -36,7 +36,26 @@ io.on('connection', (socket) => {
         delete players[socket.id];
         io.emit('updatePlayers', players);
     });
+    socket.on("keydown", (keycode) => {
+        switch (keycode) {
+            case "KeyW":
+                players[socket.id].y -= 10;
+                break;
+            case "KeyA":
+                players[socket.id].x -= 10;
+                break;
+            case "KeyS":
+                players[socket.id].y += 10;
+                break;
+            case "KeyD":
+                players[socket.id].x += 10;
+                break;
+        }
+    });
 });
+setInterval(() => {
+    io.emit("updatePlayers", players);
+}, 15);
 server.listen(port, () => {
     console.log(`express serve is live on http://localhost:${port}`);
 });
