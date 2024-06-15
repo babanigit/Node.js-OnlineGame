@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
     res.sendFile(dirname + "/public/index.html");
 });
 const players = {}; //backend players object
+const SPEED = 30;
 io.on('connection', (socket) => {
     console.log("a user connected");
     players[socket.id] = {
@@ -39,16 +40,16 @@ io.on('connection', (socket) => {
     socket.on("keydown", (keycode) => {
         switch (keycode) {
             case "KeyW":
-                players[socket.id].y -= 10;
+                players[socket.id].y -= SPEED;
                 break;
             case "KeyA":
-                players[socket.id].x -= 10;
+                players[socket.id].x -= SPEED;
                 break;
             case "KeyS":
-                players[socket.id].y += 10;
+                players[socket.id].y += SPEED;
                 break;
             case "KeyD":
-                players[socket.id].x += 10;
+                players[socket.id].x += SPEED;
                 break;
         }
     });

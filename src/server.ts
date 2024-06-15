@@ -28,6 +28,7 @@ app.get("/", (req, res) => {
 });
 
 const players: Record<string, IPlayer> = {} //backend players object
+const SPEED:number= 30
 
 io.on('connection', (socket) => {
   console.log("a user connected");
@@ -52,16 +53,16 @@ io.on('connection', (socket) => {
   socket.on("keydown", (keycode) => {
     switch (keycode) {
       case "KeyW":
-        players[socket.id].y -= 10
+        players[socket.id].y -= SPEED
         break;
       case "KeyA":
-        players[socket.id].x -= 10
+        players[socket.id].x -= SPEED
         break;
       case "KeyS":
-        players[socket.id].y += 10
+        players[socket.id].y += SPEED
         break;
       case "KeyD":
-        players[socket.id].x += 10
+        players[socket.id].x += SPEED
         break;
     }
   })
