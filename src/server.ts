@@ -1,6 +1,5 @@
 import { IPlayer } from "./interface/Player";
 
-
 import express, { Express } from "express";
 const app: Express = express();
 
@@ -11,7 +10,6 @@ const port = process.env.PORT || 3000;
 
 import path from "path";
 const dirname = path.resolve();
-
 
 //socket.io setup
 import http from "http";
@@ -27,53 +25,49 @@ app.get("/", (req, res) => {
   res.sendFile(dirname + "/public/index.html");
 });
 
-const players: Record<string, IPlayer> = {} //backend players object
-const SPEED:number= 30
+const players: Record<string, IPlayer> = {}; //backend players object
+const SPEED: number = 30;
 
-io.on('connection', (socket) => {
+io.on("connection", (socket) => {
   console.log("a user connected");
   players[socket.id] = {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
-    color: `hsl(${360 * Math.random()},100%,50%)`
-
-  }
+    color: `hsl(${360 * Math.random()},100%,50%)`,
+  };
   // sending to frontend
-  io.emit('updatePlayers', players)
-  console.log("sending this objects to the frontend ", players)
+  io.emit("updatePlayers", players);
+  console.log("sending this objects to the frontend ", players);
 
   socket.on("disconnect", (reason) => {
     console.log("user disconnected ", reason);
 
-    delete players[socket.id]
-    io.emit('updatePlayers', players)
-
+    delete players[socket.id];
+    io.emit("updatePlayers", players);
   });
 
   socket.on("keydown", (keycode) => {
     switch (keycode) {
       case "KeyW":
-        players[socket.id].y -= SPEED
+        players[socket.id].y -= SPEED;
         break;
       case "KeyA":
-        players[socket.id].x -= SPEED
+        players[socket.id].x -= SPEED;
         break;
       case "KeyS":
-        players[socket.id].y += SPEED
+        players[socket.id].y += SPEED;
         break;
       case "KeyD":
-        players[socket.id].x += SPEED
+        players[socket.id].x += SPEED;
         break;
     }
-  })
-
+  });
 });
 
 setInterval(() => {
-  io.emit("updatePlayers", players)
-}, 15)
+  io.emit("updatePlayers", players);
+}, 15);
 
 server.listen(port, () => {
   console.log(`express serve is live on http://localhost:${port}`);
 });
-
