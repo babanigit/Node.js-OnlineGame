@@ -22,12 +22,14 @@ app.get("/", (req, res) => {
 });
 const players = {}; //backend players object
 const SPEED = 30;
+const INTERVAL = 15;
 io.on("connection", (socket) => {
     console.log("a user connected");
     players[socket.id] = {
         x: 500 * Math.random(),
         y: 500 * Math.random(),
         color: `hsl(${360 * Math.random()},100%,50%)`,
+        sequenceNumber: 0
     };
     // sending to frontend
     io.emit("updatePlayers", players);
@@ -37,7 +39,9 @@ io.on("connection", (socket) => {
         delete players[socket.id];
         io.emit("updatePlayers", players);
     });
-    socket.on("keydown", (keycode) => {
+    //coming from frontend
+    socket.on("keydown", ({ keycode, sequenceNumber }) => {
+        players[socket.id].sequenceNumber = sequenceNumber;
         switch (keycode) {
             case "KeyW":
                 players[socket.id].y -= SPEED;
@@ -56,7 +60,7 @@ io.on("connection", (socket) => {
 });
 setInterval(() => {
     io.emit("updatePlayers", players);
-}, 15);
+}, INTERVAL);
 server.listen(port, () => {
     console.log(`express serve is live on http://localhost:${port}`);
 });
