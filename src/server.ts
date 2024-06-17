@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 });
 
 const players: Record<string, IPlayer> = {}; //backend players object
-const SPEED: number = 30;
+const SPEED: number = 10;
 const INTERVAL = 15
 
 io.on("connection", (socket) => {

@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
     res.sendFile(dirname + "/public/index.html");
 });
 const players = {}; //backend players object
-const SPEED = 30;
+const SPEED = 10;
 const INTERVAL = 15;
 io.on("connection", (socket) => {
     console.log("a user connected");

@@ -28,7 +28,6 @@ socket.on("updatePlayers", (backEndPlayers) => {
         color: backEndPlayer.color,
       });
     } else {
-
       // make players to move with fixing latency of frontend players
       if (id === socket.id) {
         //if player exists
@@ -46,11 +45,17 @@ socket.on("updatePlayers", (backEndPlayers) => {
           frontEndPlayers[id].x += input.dx;
           frontEndPlayers[id].y += input.dy;
         });
-
       } else {
         //for other players
-        frontEndPlayers[id].x = backEndPlayer.x;
-        frontEndPlayers[id].y = backEndPlayer.y;
+        // frontEndPlayers[id].x = backEndPlayer.x;
+        // frontEndPlayers[id].y = backEndPlayer.y;
+
+        gsap.to(frontEndPlayers[id], {
+          x: backEndPlayer.x,
+          y: backEndPlayer.y,
+          duration: 0.015,
+          ease: "linear",
+        });
       }
     }
   }
@@ -94,7 +99,7 @@ const keys = {
   },
 };
 
-const SPEED = 30;
+const SPEED = 10;
 const INTERVAL = 15;
 
 const playerInputs = [];
@@ -138,6 +143,7 @@ setInterval(() => {
 window.addEventListener("keydown", (event) => {
   if (!frontEndPlayers[socket.id]) return;
 
+  console.log(event);
   switch (event.code) {
     case "KeyW":
       keys.w.pressed = true;
