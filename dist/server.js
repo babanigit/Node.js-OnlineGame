@@ -21,6 +21,8 @@ app.get("/", (req, res) => {
     res.sendFile(dirname + "/public/index.html");
 });
 const players = {}; //backend players object
+const projectTiles = {};
+let projectTilesId = 0;
 const SPEED = 10;
 const INTERVAL = 15;
 io.on("connection", (socket) => {
@@ -33,6 +35,17 @@ io.on("connection", (socket) => {
     };
     // sending to frontend
     io.emit("updatePlayers", players);
+    socket.on("shoot", ({ x, y, angle }) => {
+        projectTilesId++;
+        const velocity = {
+            x: Math.cos(angle) * 5,
+            y: Math.sin(angle) * 5,
+        };
+        projectTiles[projectTilesId] = {
+            x, y, velocity, playerId: socket.id
+        };
+        console.log(projectTiles);
+    });
     console.log("sending this objects to the frontend ", players);
     socket.on("disconnect", (reason) => {
         console.log("user disconnected ", reason);
@@ -59,7 +72,13 @@ io.on("connection", (socket) => {
     });
 });
 setInterval(() => {
-    io.emit("updatePlayers", players);
+    // update projectTile Position
+    for (const id in projectTiles) {
+        projectTiles[id].x += projectTiles[id].velocity.x;
+        projectTiles[id].y += projectTiles[id].velocity.y;
+    }
+    io.emit("updateProjectTiles", projectTiles); //update projectTiles
+    io.emit("updatePlayers", players); //update players
 }, INTERVAL);
 server.listen(port, () => {
     console.log(`express serve is live on http://localhost:${port}`);

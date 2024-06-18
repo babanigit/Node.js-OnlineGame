@@ -84,10 +84,10 @@ function animate() {
   }
 
   // drawing the projectTiles
-  for(let i=frontEndProjectTiles.length-1; i>=0; i--) {
-    const frontEndProjectTile=frontEndProjectTiles[i]
-    frontEndProjectTile.update()
-  }
+  // for(let i=frontEndProjectTiles.length-1; i>=0; i--) {
+  //   const frontEndProjectTile=frontEndProjectTiles[i]
+  //   frontEndProjectTile.update()
+  // }
 
 }
 

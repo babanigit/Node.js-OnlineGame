@@ -1,4 +1,4 @@
-import { IPlayer } from "./interface/Player";
+import { IPlayer, IProjectTile } from "./interface/Player";
 
 import express, { Express } from "express";
 const app: Express = express();
@@ -24,6 +24,10 @@ app.get("/", (req, res) => {
 });
 
 const players: Record<string, IPlayer> = {}; //backend players object
+const projectTiles: Record<number, IProjectTile> = {}
+
+let projectTilesId = 0
+
 const SPEED: number = 10;
 const INTERVAL = 15
 
@@ -37,6 +41,23 @@ io.on("connection", (socket) => {
   };
   // sending to frontend
   io.emit("updatePlayers", players);
+
+  socket.on("shoot", ({ x, y, angle }) => {
+    projectTilesId++
+
+    const velocity = {
+      x: Math.cos(angle) * 5,
+      y: Math.sin(angle) * 5,
+    };
+
+    projectTiles[projectTilesId] = {
+      x, y, velocity, playerId: socket.id
+    }
+
+    console.log(projectTiles)
+
+  })
+
   console.log("sending this objects to the frontend ", players);
 
   socket.on("disconnect", (reason) => {
@@ -68,7 +89,14 @@ io.on("connection", (socket) => {
 });
 
 setInterval(() => {
-  io.emit("updatePlayers", players);
+  // update projectTile Position
+  for (const id in projectTiles) {
+    projectTiles[id].x += projectTiles[id].velocity.x;
+    projectTiles[id].y += projectTiles[id].velocity.y;
+  }
+  io.emit("updateProjectTiles", projectTiles);  //update projectTiles
+
+  io.emit("updatePlayers", players);  //update players
 }, INTERVAL);
 
 server.listen(port, () => {
