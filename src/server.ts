@@ -24,12 +24,12 @@ app.get("/", (req, res) => {
 });
 
 const players: Record<string, IPlayer> = {}; //backend players object
-const projectTiles: Record<number, IProjectTile> = {}
+const projectTiles: Record<number, IProjectTile> = {};
 
-let projectTilesId = 0
+let projectTilesId = 0;
 
 const SPEED: number = 10;
-const INTERVAL = 15
+const INTERVAL = 15;
 
 io.on("connection", (socket) => {
   console.log("a user connected");
@@ -37,13 +37,22 @@ io.on("connection", (socket) => {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
     color: `hsl(${360 * Math.random()},100%,50%)`,
-    sequenceNumber: 0
+    sequenceNumber: 0,
   };
   // sending to frontend
   io.emit("updatePlayers", players);
 
+  //get canvas
+  socket.on("initCanvas", ({ width, height }) => {
+    players[socket.id].canvas = {
+      width,
+      height,
+    };
+  });
+
+  //get shoot
   socket.on("shoot", ({ x, y, angle }) => {
-    projectTilesId++
+    projectTilesId++;
 
     const velocity = {
       x: Math.cos(angle) * 5,
@@ -51,12 +60,12 @@ io.on("connection", (socket) => {
     };
 
     projectTiles[projectTilesId] = {
-      x, y, velocity, playerId: socket.id
-    }
-
-    console.log(projectTiles)
-
-  })
+      x,
+      y,
+      velocity,
+      playerId: socket.id,
+    };
+  });
 
   console.log("sending this objects to the frontend ", players);
 
@@ -94,10 +103,10 @@ setInterval(() => {
     projectTiles[id].x += projectTiles[id].velocity.x;
     projectTiles[id].y += projectTiles[id].velocity.y;
   }
-  
-  io.emit("updateProjectTiles", projectTiles);  //update projectTiles
 
-  io.emit("updatePlayers", players);  //update players
+  io.emit("updateProjectTiles", projectTiles); //update projectTiles
+
+  io.emit("updatePlayers", players); //update players
 }, INTERVAL);
 
 server.listen(port, () => {

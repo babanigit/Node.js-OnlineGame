@@ -16,6 +16,10 @@ const y = canvas.height / 2;
 const frontEndPlayers = {}; // frontend players object
 const frontEndProjectTiles = {};
 
+socket.on("connect", (hello) => {
+  socket.emit("initCanvas", { width: canvas.width, height: canvas.height });
+});
+
 //get backend projectTiles
 socket.on("updateProjectTiles", (backEndProjectTiles) => {
   for (const id in backEndProjectTiles) {
@@ -26,12 +30,12 @@ socket.on("updateProjectTiles", (backEndProjectTiles) => {
         x: backEndProjectTile.x,
         y: backEndProjectTile.y,
         radius: 5,
-        color:frontEndPlayers[backEndProjectTile.playerId]?.color,
+        color: frontEndPlayers[backEndProjectTile.playerId]?.color,
         velocity: backEndProjectTile.velocity,
       });
     } else {
-      frontEndProjectTiles[id].x += backEndProjectTiles[id].velocity.x
-      frontEndProjectTiles[id].y += backEndProjectTiles[id].velocity.y
+      frontEndProjectTiles[id].x += backEndProjectTiles[id].velocity.x;
+      frontEndProjectTiles[id].y += backEndProjectTiles[id].velocity.y;
     }
   }
 });

@@ -31,10 +31,18 @@ io.on("connection", (socket) => {
         x: 500 * Math.random(),
         y: 500 * Math.random(),
         color: `hsl(${360 * Math.random()},100%,50%)`,
-        sequenceNumber: 0
+        sequenceNumber: 0,
     };
     // sending to frontend
     io.emit("updatePlayers", players);
+    //get canvas
+    socket.on("initCanvas", ({ width, height }) => {
+        players[socket.id].canvas = {
+            width,
+            height,
+        };
+    });
+    //get shoot
     socket.on("shoot", ({ x, y, angle }) => {
         projectTilesId++;
         const velocity = {
@@ -42,9 +50,11 @@ io.on("connection", (socket) => {
             y: Math.sin(angle) * 5,
         };
         projectTiles[projectTilesId] = {
-            x, y, velocity, playerId: socket.id
+            x,
+            y,
+            velocity,
+            playerId: socket.id,
         };
-        console.log(projectTiles);
     });
     console.log("sending this objects to the frontend ", players);
     socket.on("disconnect", (reason) => {
