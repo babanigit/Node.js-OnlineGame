@@ -71,6 +71,7 @@ socket.on("updatePlayers", (backEndPlayers) => {
 
 let animationId;
 let score = 0;
+
 function animate() {
   animationId = requestAnimationFrame(animate);
   c.fillStyle = "rgba(0, 0, 0, 0.1)";
@@ -81,6 +82,13 @@ function animate() {
     const frontendPlayer = frontEndPlayers[id];
     frontendPlayer.draw();
   }
+
+  // drawing the projectTiles
+  for(let i=frontEndProjectTiles.length-1; i>=0; i--) {
+    const frontEndProjectTile=frontEndProjectTiles[i]
+    frontEndProjectTile.update()
+  }
+
 }
 
 animate();
@@ -144,7 +152,7 @@ setInterval(() => {
 window.addEventListener("keydown", (event) => {
   if (!frontEndPlayers[socket.id]) return;
 
-  console.log(event);
+  // console.log(event);
   switch (event.code) {
     case "KeyW":
       keys.w.pressed = true;
