@@ -14,8 +14,29 @@ const y = canvas.height / 2;
 
 // const player = new Player(x, y, 10, "white");
 const frontEndPlayers = {}; // frontend players object
-const frontEndProjectTiles= [];
+const frontEndProjectTiles = {};
 
+//get backend projectTiles
+socket.on("updateProjectTiles", (backEndProjectTiles) => {
+  for (const id in backEndProjectTiles) {
+    const backEndProjectTile = backEndProjectTiles[id];
+
+    if (!frontEndProjectTiles[id]) {
+      frontEndProjectTiles[id] = new Projectile({
+        x: backEndProjectTile.x,
+        y: backEndProjectTile.y,
+        radius: 5,
+        color:frontEndPlayers[backEndProjectTile.playerId]?.color,
+        velocity: backEndProjectTile.velocity,
+      });
+    } else {
+      frontEndProjectTiles[id].x += backEndProjectTiles[id].velocity.x
+      frontEndProjectTiles[id].y += backEndProjectTiles[id].velocity.y
+    }
+  }
+});
+
+//get backend players
 socket.on("updatePlayers", (backEndPlayers) => {
   //add the backend players into frontend players object
   for (const id in backEndPlayers) {
@@ -84,11 +105,16 @@ function animate() {
   }
 
   // drawing the projectTiles
+  for (const id in frontEndProjectTiles) {
+    const frontEndProjectTile = frontEndProjectTiles[id];
+    frontEndProjectTile.draw();
+  }
+
+  // drawing the projectTiles
   // for(let i=frontEndProjectTiles.length-1; i>=0; i--) {
   //   const frontEndProjectTile=frontEndProjectTiles[i]
   //   frontEndProjectTile.update()
   // }
-
 }
 
 animate();

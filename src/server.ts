@@ -94,6 +94,7 @@ setInterval(() => {
     projectTiles[id].x += projectTiles[id].velocity.x;
     projectTiles[id].y += projectTiles[id].velocity.y;
   }
+  
   io.emit("updateProjectTiles", projectTiles);  //update projectTiles
 
   io.emit("updatePlayers", players);  //update players
