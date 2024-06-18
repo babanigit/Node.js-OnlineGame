@@ -14,6 +14,7 @@ const y = canvas.height / 2;
 
 // const player = new Player(x, y, 10, "white");
 const frontEndPlayers = {}; // frontend players object
+const frontEndProjectTiles= [];
 
 socket.on("updatePlayers", (backEndPlayers) => {
   //add the backend players into frontend players object
