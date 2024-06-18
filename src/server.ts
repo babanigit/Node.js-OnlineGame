@@ -31,6 +31,8 @@ let projectTilesId = 0;
 const SPEED: number = 10;
 const INTERVAL = 15;
 
+const PROJECTILE_RADIUS = 5;
+
 io.on("connection", (socket) => {
   console.log("a user connected");
   players[socket.id] = {
@@ -102,11 +104,23 @@ setInterval(() => {
   for (const id in projectTiles) {
     projectTiles[id].x += projectTiles[id].velocity.x;
     projectTiles[id].y += projectTiles[id].velocity.y;
+
+    if (
+      projectTiles[id].x - PROJECTILE_RADIUS >=
+      players[projectTiles[id].playerId]?.canvas!.width ||
+      projectTiles[id].x + PROJECTILE_RADIUS <= 0 ||
+      projectTiles[id].y - PROJECTILE_RADIUS >=
+      players[projectTiles[id].playerId]?.canvas!.height ||
+      projectTiles[id].y + PROJECTILE_RADIUS <= 0
+    ) {
+      delete projectTiles[id]
+    }
+    console.log(projectTiles)
   }
 
   io.emit("updateProjectTiles", projectTiles); //update projectTiles
-
   io.emit("updatePlayers", players); //update players
+  
 }, INTERVAL);
 
 server.listen(port, () => {

@@ -1,7 +1,7 @@
 export interface IPlayer {
     x: number;
     y: number;
-    color:string
+    color:string                                                                                                                                                                        
     sequenceNumber:number;
     canvas?:{
       width:number;

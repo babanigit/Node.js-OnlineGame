@@ -38,6 +38,14 @@ socket.on("updateProjectTiles", (backEndProjectTiles) => {
       frontEndProjectTiles[id].y += backEndProjectTiles[id].velocity.y;
     }
   }
+
+  //delete projectTile comparing to backend
+  for (const id in frontEndProjectTiles) {
+    if (!backEndProjectTiles[id]) {
+      delete frontEndProjectTiles[id];
+    }
+  }
+
 });
 
 //get backend players

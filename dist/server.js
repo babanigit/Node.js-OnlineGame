@@ -25,6 +25,7 @@ const projectTiles = {};
 let projectTilesId = 0;
 const SPEED = 10;
 const INTERVAL = 15;
+const PROJECTILE_RADIUS = 5;
 io.on("connection", (socket) => {
     console.log("a user connected");
     players[socket.id] = {
@@ -82,10 +83,20 @@ io.on("connection", (socket) => {
     });
 });
 setInterval(() => {
+    var _a, _b;
     // update projectTile Position
     for (const id in projectTiles) {
         projectTiles[id].x += projectTiles[id].velocity.x;
         projectTiles[id].y += projectTiles[id].velocity.y;
+        if (projectTiles[id].x - PROJECTILE_RADIUS >=
+            ((_a = players[projectTiles[id].playerId]) === null || _a === void 0 ? void 0 : _a.canvas.width) ||
+            projectTiles[id].x + PROJECTILE_RADIUS <= 0 ||
+            projectTiles[id].y - PROJECTILE_RADIUS >=
+                ((_b = players[projectTiles[id].playerId]) === null || _b === void 0 ? void 0 : _b.canvas.height) ||
+            projectTiles[id].y + PROJECTILE_RADIUS <= 0) {
+            delete projectTiles[id];
+        }
+        console.log(projectTiles);
     }
     io.emit("updateProjectTiles", projectTiles); //update projectTiles
     io.emit("updatePlayers", players); //update players
