@@ -30,6 +30,7 @@ let projectTilesId = 0;
 
 const SPEED: number = 10;
 const INTERVAL = 15;
+const RADIUS = 10
 
 const PROJECTILE_RADIUS = 5;
 
@@ -45,11 +46,18 @@ io.on("connection", (socket) => {
   io.emit("updatePlayers", players);
 
   //get canvas
-  socket.on("initCanvas", ({ width, height }) => {
+  socket.on("initCanvas", ({ width, height, devicePixelRatio }) => {
     players[socket.id].canvas = {
       width,
       height,
     };
+
+    players[socket.id].radius = RADIUS
+
+    if (devicePixelRatio > 1) {
+      players[socket.id].radius = 2 * RADIUS;
+    }
+
   });
 
   //get shoot
@@ -68,8 +76,6 @@ io.on("connection", (socket) => {
       playerId: socket.id,
     };
   });
-
-  console.log("sending this objects to the frontend ", players);
 
   socket.on("disconnect", (reason) => {
     console.log("user disconnected ", reason);
@@ -105,6 +111,7 @@ setInterval(() => {
     projectTiles[id].x += projectTiles[id].velocity.x;
     projectTiles[id].y += projectTiles[id].velocity.y;
 
+    // deleting projectile when it touches the wall.
     if (
       projectTiles[id].x - PROJECTILE_RADIUS >=
       players[projectTiles[id].playerId]?.canvas!.width ||
@@ -114,13 +121,31 @@ setInterval(() => {
       projectTiles[id].y + PROJECTILE_RADIUS <= 0
     ) {
       delete projectTiles[id]
+      continue;
     }
-    console.log(projectTiles)
+
+    // deleting player and projectile when they touch each other.
+    for (const playerId in players) {
+      const player = players[playerId]
+      console.log(player)
+
+      const DISTANCE = Math.hypot(
+        projectTiles[id].x - player.x,
+        projectTiles[id].y - player.y
+      )
+
+      if (DISTANCE < PROJECTILE_RADIUS + player.radius! && projectTiles[id].playerId !== playerId) {
+        delete projectTiles[id]
+        delete players[playerId]
+        break
+      }
+
+    }
   }
 
   io.emit("updateProjectTiles", projectTiles); //update projectTiles
   io.emit("updatePlayers", players); //update players
-  
+
 }, INTERVAL);
 
 server.listen(port, () => {

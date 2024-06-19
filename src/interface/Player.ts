@@ -7,6 +7,7 @@ export interface IPlayer {
       width:number;
       height:number;
     }
+    radius?:number;
   }
   export interface IProjectTile {
     x: number;
@@ -16,6 +17,7 @@ export interface IPlayer {
       y: number;
     };
     playerId:string
+    radius?:number;
     // angle?:number;
     // color:string
     // sequenceNumber:number;

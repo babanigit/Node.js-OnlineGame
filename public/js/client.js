@@ -45,7 +45,6 @@ socket.on("updateProjectTiles", (backEndProjectTiles) => {
       delete frontEndProjectTiles[id];
     }
   }
-
 });
 
 //get backend players
