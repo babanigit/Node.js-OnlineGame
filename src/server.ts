@@ -36,11 +36,14 @@ const PROJECTILE_RADIUS = 5;
 
 io.on("connection", (socket) => {
   console.log("a user connected");
+
+  //initializing new player 
   players[socket.id] = {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
     color: `hsl(${360 * Math.random()},100%,50%)`,
     sequenceNumber: 0,
+    score:0
   };
   // sending to frontend
   io.emit("updatePlayers", players);
@@ -134,7 +137,10 @@ setInterval(() => {
         projectTiles[id].y - player.y
       )
 
+      //collision detection
       if (DISTANCE < PROJECTILE_RADIUS + player.radius! && projectTiles[id].playerId !== playerId) {
+
+        players[projectTiles[id].playerId].score++;
         delete projectTiles[id]
         delete players[playerId]
         break

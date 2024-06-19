@@ -60,7 +60,17 @@ socket.on("updatePlayers", (backEndPlayers) => {
         radius: 10,
         color: backEndPlayer.color,
       });
+
+      document.querySelector(
+        "#playerLabels"
+      ).innerHTML += `<div data-id="${id}" >  ${id} : ${backEndPlayer.score}</div>`;
     } else {
+      
+      // changing the innerHtml
+      document.querySelector(
+        `div[data-id="${id}"]`
+      ).innerHTML = `${id} : ${backEndPlayer.score}`;
+
       // make players to move with fixing latency of frontend players
       if (id === socket.id) {
         //if player exists
@@ -96,6 +106,8 @@ socket.on("updatePlayers", (backEndPlayers) => {
   //deleting frontendPlayer with comparing to backendPlayers
   for (const id in frontEndPlayers) {
     if (!backEndPlayers[id]) {
+      const divToDelete = document.querySelector(`div[data-id="${id}"]`);
+      divToDelete.parentNode.removeChild(divToDelete);
       delete frontEndPlayers[id];
     }
   }

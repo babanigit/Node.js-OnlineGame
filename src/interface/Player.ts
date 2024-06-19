@@ -8,6 +8,7 @@ export interface IPlayer {
       height:number;
     }
     radius?:number;
+    score:number;
   }
   export interface IProjectTile {
     x: number;
