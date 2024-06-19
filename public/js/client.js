@@ -61,15 +61,37 @@ socket.on("updatePlayers", (backEndPlayers) => {
         color: backEndPlayer.color,
       });
 
+      //adding label div
       document.querySelector(
         "#playerLabels"
-      ).innerHTML += `<div data-id="${id}" >  ${id} : ${backEndPlayer.score}</div>`;
-    } else {
+      ).innerHTML += `<div data-id="${id}" data-score="${backEndPlayer.score}" >  ${id} : ${backEndPlayer.score}</div>`;
       
-      // changing the innerHtml
+    } else {
+
+      // changing and adding score and id
       document.querySelector(
         `div[data-id="${id}"]`
       ).innerHTML = `${id} : ${backEndPlayer.score}`;
+      document
+        .querySelector(`div[data-id="${id}"]`)
+        .setAttribute("data-score", backEndPlayer.score);
+
+      // short the players div
+      const parentDiv = document.querySelector("#playerLabels");
+      const childDivs = Array.from(parentDiv.querySelectorAll("div"));
+      
+      childDivs.sort((a,b)=>{
+        const scoreA= Number(a.getAttribute("data-score"))
+        const scoreB= Number(b.getAttribute("data-score"))
+        return scoreB-scoreA
+      })
+      //remove and append child
+      childDivs.forEach((div)=>{
+        parentDiv.removeChild(div)
+      })
+      childDivs.forEach((div)=>{
+        parentDiv.append(div)
+      })
 
       // make players to move with fixing latency of frontend players
       if (id === socket.id) {
