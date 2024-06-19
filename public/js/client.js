@@ -16,10 +16,6 @@ const y = canvas.height / 2;
 const frontEndPlayers = {}; // frontend players object
 const frontEndProjectTiles = {};
 
-socket.on("connect", (hello) => {
-  socket.emit("initCanvas", { width: canvas.width, height: canvas.height });
-});
-
 //get backend projectTiles
 socket.on("updateProjectTiles", (backEndProjectTiles) => {
   for (const id in backEndProjectTiles) {
@@ -64,14 +60,12 @@ socket.on("updatePlayers", (backEndPlayers) => {
       //adding label div
       document.querySelector(
         "#playerLabels"
-      ).innerHTML += `<div data-id="${id}" data-score="${backEndPlayer.score}" >  ${id} : ${backEndPlayer.score}</div>`;
-      
+      ).innerHTML += `<div data-id="${id}" data-score="${backEndPlayer.score}" >  ${backEndPlayer.username} : ${backEndPlayer.score}</div>`;
     } else {
-
       // changing and adding score and id
       document.querySelector(
         `div[data-id="${id}"]`
-      ).innerHTML = `${id} : ${backEndPlayer.score}`;
+      ).innerHTML = `${backEndPlayer.username} : ${backEndPlayer.score}`;
       document
         .querySelector(`div[data-id="${id}"]`)
         .setAttribute("data-score", backEndPlayer.score);
@@ -79,19 +73,19 @@ socket.on("updatePlayers", (backEndPlayers) => {
       // short the players div
       const parentDiv = document.querySelector("#playerLabels");
       const childDivs = Array.from(parentDiv.querySelectorAll("div"));
-      
-      childDivs.sort((a,b)=>{
-        const scoreA= Number(a.getAttribute("data-score"))
-        const scoreB= Number(b.getAttribute("data-score"))
-        return scoreB-scoreA
-      })
+
+      childDivs.sort((a, b) => {
+        const scoreA = Number(a.getAttribute("data-score"));
+        const scoreB = Number(b.getAttribute("data-score"));
+        return scoreB - scoreA;
+      });
       //remove and append child
-      childDivs.forEach((div)=>{
-        parentDiv.removeChild(div)
-      })
-      childDivs.forEach((div)=>{
-        parentDiv.append(div)
-      })
+      childDivs.forEach((div) => {
+        parentDiv.removeChild(div);
+      });
+      childDivs.forEach((div) => {
+        parentDiv.append(div);
+      });
 
       // make players to move with fixing latency of frontend players
       if (id === socket.id) {
@@ -130,6 +124,11 @@ socket.on("updatePlayers", (backEndPlayers) => {
     if (!backEndPlayers[id]) {
       const divToDelete = document.querySelector(`div[data-id="${id}"]`);
       divToDelete.parentNode.removeChild(divToDelete);
+
+      if (id === socket.id) {
+        document.querySelector("#usernameForm").style.display = "block";
+      }
+
       delete frontEndPlayers[id];
     }
   }
@@ -238,4 +237,16 @@ window.addEventListener("keydown", (event) => {
       keys.d.pressed = true;
       break;
   }
+});
+
+// get form data
+document.querySelector("#usernameForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  document.querySelector("#usernameForm").style.display = "none";
+  socket.emit("initGame", {
+    width: canvas.width,
+    height: canvas.height,
+    devicePixelRatio,
+    username: document.querySelector("#usernameInput").value,
+  });
 });

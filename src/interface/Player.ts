@@ -9,6 +9,7 @@ export interface IPlayer {
     }
     radius?:number;
     score:number;
+    username:string;
   }
   export interface IProjectTile {
     x: number;

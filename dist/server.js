@@ -16,7 +16,6 @@ const server = http_1.default.createServer(app);
 const socket_io_1 = require("socket.io");
 const io = new socket_io_1.Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 app.use(express_1.default.static("public"));
-console.log(dirname);
 app.get("/", (req, res) => {
     res.sendFile(dirname + "/public/index.html");
 });
@@ -29,27 +28,8 @@ const RADIUS = 10;
 const PROJECTILE_RADIUS = 5;
 io.on("connection", (socket) => {
     console.log("a user connected");
-    //initializing new player 
-    players[socket.id] = {
-        x: 500 * Math.random(),
-        y: 500 * Math.random(),
-        color: `hsl(${360 * Math.random()},100%,50%)`,
-        sequenceNumber: 0,
-        score: 0
-    };
-    // sending to frontend
+    //sending to frontend
     io.emit("updatePlayers", players);
-    //get canvas
-    socket.on("initCanvas", ({ width, height, devicePixelRatio }) => {
-        players[socket.id].canvas = {
-            width,
-            height,
-        };
-        players[socket.id].radius = RADIUS;
-        if (devicePixelRatio > 1) {
-            players[socket.id].radius = 2 * RADIUS;
-        }
-    });
     //get shoot
     socket.on("shoot", ({ x, y, angle }) => {
         projectTilesId++;
@@ -63,6 +43,28 @@ io.on("connection", (socket) => {
             velocity,
             playerId: socket.id,
         };
+    });
+    // get initGame when form submitted
+    socket.on("initGame", ({ width, height, devicePixelRatio, username }) => {
+        //initializing new player 
+        players[socket.id] = {
+            x: 500 * Math.random(),
+            y: 500 * Math.random(),
+            color: `hsl(${360 * Math.random()},100%,50%)`,
+            sequenceNumber: 0,
+            score: 0,
+            username
+        };
+        console.log(username);
+        //init canvas
+        players[socket.id].canvas = {
+            width,
+            height,
+        };
+        players[socket.id].radius = RADIUS;
+        if (devicePixelRatio > 1) {
+            players[socket.id].radius = 2 * RADIUS;
+        }
     });
     socket.on("disconnect", (reason) => {
         console.log("user disconnected ", reason);
@@ -107,7 +109,6 @@ setInterval(() => {
         // deleting player and projectile when they touch each other.
         for (const playerId in players) {
             const player = players[playerId];
-            console.log(player);
             const DISTANCE = Math.hypot(projectTiles[id].x - player.x, projectTiles[id].y - player.y);
             //collision detection
             if (DISTANCE < PROJECTILE_RADIUS + player.radius && projectTiles[id].playerId !== playerId) {
